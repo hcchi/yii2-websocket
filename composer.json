@@ -1,13 +1,18 @@
 {
-    "name": "yiiplus/yii2-websocket",
-    "description": "使用yii2封装 websocket 扩展",
+    "name": "hcchi/yii2-websocket",
+    "description": "基于 yiiplus/yii2-websocket 的自定义修改版本",
     "type": "yii2-extension",
     "keywords": ["yii2","extension","websocket","swoole"],
     "license": "Apache-2.0",
     "authors": [
         {
+            "name": "hcchi",
+            "email": "780612040@qq.com"
+        },
+        {
             "name": "gengxiankun",
-            "email": "gengxiankun@126.com"
+            "email": "gengxiankun@126.com",
+            "role": "Original author"
         }
     ],
     "require": {
@@ -15,9 +20,9 @@
     },
     "autoload": {
         "psr-4": {
-            "yiiplus\\websocket\\": "src",
-            "yiiplus\\websocket\\swoole\\": "src/drivers/swoole",
-            "yiiplus\\websocket\\workerman\\": "src/drivers/workerman"
+            "hcchi\\websocket\\": "src",
+            "hcchi\\websocket\\swoole\\": "src/drivers/swoole",
+            "hcchi\\websocket\\workerman\\": "src/drivers/workerman"
         }
     }
 }

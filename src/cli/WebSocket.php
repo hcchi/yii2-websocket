@@ -31,7 +31,7 @@ use yiiplus\websocket\WebSocket as BaseWebSocket;
  */
 abstract class WebSocket extends BaseWebSocket implements BootstrapInterface
 {
-	/**
+    /**
      * @var string command class name
      */
     public $commandClass = Command::class;
@@ -46,7 +46,7 @@ abstract class WebSocket extends BaseWebSocket implements BootstrapInterface
      */
     public $channels = [];
 
-	/**
+    /**
      * 获取CommandId
      *
      * @return string command id
@@ -70,9 +70,9 @@ abstract class WebSocket extends BaseWebSocket implements BootstrapInterface
     {
         if ($app instanceof ConsoleApp) {
             $app->controllerMap[$this->getCommandId()] = [
-                'class' => $this->commandClass,
-                'websocket' => $this,
-            ] + $this->commandOptions;
+                    'class' => $this->commandClass,
+                    'websocket' => $this,
+                ] + $this->commandOptions;
         }
     }
 }

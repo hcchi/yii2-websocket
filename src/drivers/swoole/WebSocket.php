@@ -11,6 +11,8 @@
 
 namespace yiiplus\websocket\swoole;
 
+use Swoole\Client;
+use Swoole\WebSocket\Frame;
 use yiiplus\websocket\cli\WebSocket as CliWebSocket;
 
 /**
@@ -21,7 +23,7 @@ use yiiplus\websocket\cli\WebSocket as CliWebSocket;
  * ```php
  *  'components' => [
  *      ...
- *      'webslocket' => [
+ *      'websocket' => [
  *          'class' => 'yiiplus\websocket\swoole\WebSocket',
  *          'host' => '127.0.0.1',
  *          'port' => '9501',
@@ -39,7 +41,7 @@ use yiiplus\websocket\cli\WebSocket as CliWebSocket;
  * @property string        $origin         string Header Origin，默认为null，可通过components配置设置此参数
  * @property mixed         $returnData     返回数据
  * @property mixed         $_key Websocket Sec-WebSocket-Key
- * @property swoole_client $_socket        WebSocket客户端
+ * @property Client        $_socket        WebSocket客户端
  * @property mixed         $_buffer        用于对`recv`方法获取服务器接受到的数据进行缓存
  * @property mixed         $_connected     链接的状态
  *
@@ -51,7 +53,7 @@ class WebSocket extends CliWebSocket
     /**
      * @const string PHPWebSocket客户端版本号
      */
-	const VERSION = '0.1.4';
+    const VERSION = '0.1.4';
 
     /**
      * @const integer 生成TOKEN的长度
@@ -95,7 +97,7 @@ class WebSocket extends CliWebSocket
     private $_key;
 
     /**
-     * @var swoole_client Swoole客户端
+     * @var Client Swoole客户端
      */
     private $_socket;
 
@@ -114,7 +116,7 @@ class WebSocket extends CliWebSocket
      */
     public function init()
     {
-    	parent::init();
+        parent::init();
 
         if (!isset($this->host)) {
             throw new InvalidParamException('Host parameter does not exist.');
@@ -124,7 +126,7 @@ class WebSocket extends CliWebSocket
             throw new InvalidParamException('Port parameter does not exist.');
         }
 
-    	$this->_key = $this->generateToken(self::TOKEN_LENGHT);
+        $this->_key = $this->generateToken(self::TOKEN_LENGHT);
     }
 
     /**
@@ -135,7 +137,7 @@ class WebSocket extends CliWebSocket
     protected function connect()
     {
         // 建立连接
-        $this->_socket = new \swoole_client(SWOOLE_SOCK_TCP);
+        $this->_socket = new Client(SWOOLE_SOCK_TCP);
         if (!$this->_socket->connect($this->host, $this->port)) {
             return false;
         }
@@ -156,25 +158,25 @@ class WebSocket extends CliWebSocket
     public function send($data, $type = 'text', $masked = true)
     {
         $this->connect();
-        
+
         switch($type)
         {
             case 'text':
-                $_type = WEBSOCKET_OPCODE_TEXT;
+                $_type = SWOOLE_WEBSOCKET_OPCODE_TEXT;
                 break;
             case 'binary':
             case 'bin':
-                $_type = WEBSOCKET_OPCODE_BINARY;
+                $_type = SWOOLE_WEBSOCKET_OPCODE_BINARY;
                 break;
             case 'ping':
-                $_type = WEBSOCKET_OPCODE_PING;
+                $_type = SWOOLE_WEBSOCKET_OPCODE_PING;
                 break;
             default:
                 return false;
         }
 
         // 将WebSocket消息打包并发送
-        return $this->_socket->send(\swoole_websocket_server::pack(json_encode($data), $_type, true, $masked));
+        return $this->_socket->send(\Swoole\WebSocket\Server::pack(json_encode($data), $_type, $masked));
     }
 
     /**
@@ -232,36 +234,36 @@ class WebSocket extends CliWebSocket
      *
      * @param $response 相应数据
      *
-     * @return 
+     * @return
      */
     private function parseData($response)
     {
         if (!$this->_connected)
-		{
+        {
             // 确认请求来自WebSocket
-			$response = $this->parseIncomingRaw($response);
-			if (isset($response['Sec-Websocket-Accept'])
-				&& base64_encode(pack('H*', sha1($this->_key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'))) === $response['Sec-Websocket-Accept']
-			)
-			{
-				$this->_connected = true;
-				return true;
-			}
-			else
-			{
-				throw new \Exception("error response key.");
-			}
-		}
+            $response = $this->parseIncomingRaw($response);
+            if (isset($response['Sec-Websocket-Accept'])
+                && base64_encode(pack('H*', sha1($this->_key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'))) === $response['Sec-Websocket-Accept']
+            )
+            {
+                $this->_connected = true;
+                return true;
+            }
+            else
+            {
+                throw new \Exception("error response key.");
+            }
+        }
 
         // 解析WebSocket数据帧，@link: https://wiki.swoole.com/wiki/page/798.html
-        $frame = \swoole_websocket_server::unpack($response);
+        $frame = \Swoole\WebSocket\Server::unpack($response);
         if ($frame)
         {
             return $this->returnData ? $frame->data : $frame;
         }
         else
         {
-            throw new \Exception("swoole_websocket_server::unpack failed.");
+            throw new \Exception("Swoole\\WebSocket\\Server::unpack failed.");
         }
     }
 
