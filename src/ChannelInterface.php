@@ -9,7 +9,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace yiiplus\websocket;
+namespace hcchi\websocket;
 
 /**
  * Channel Interface. 

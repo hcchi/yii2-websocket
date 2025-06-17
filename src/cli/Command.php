@@ -58,9 +58,9 @@ abstract class Command extends Controller
     public function init()
     {
         parent::init();
+
         // 如果 websocket 组件有配置 channels，同步到 channelClasses
         if ($this->websocket && !empty($this->websocket->channels)) {
-
             $this->channelClasses = $this->websocket->channels;
         }
     }
