@@ -9,11 +9,11 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace hcchi\websocket\swoole;
+namespace yiiplus\websocket\swoole;
 
 use yii\base\Exception;
 use yii\base\InvalidArgumentException;
-use hcchi\websocket\cli\Command as CliCommand;
+use yiiplus\websocket\cli\Command as CliCommand;
 use Swoole\WebSocket\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
