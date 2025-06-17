@@ -101,7 +101,6 @@ class Command extends CliCommand
 
     /**
      * 当服务器收到来自客户端的数据帧时会回调此函数
-     *
      * @param object $connection 客户端连接对象
      * @param string $data       客户端发送的数据
      *
